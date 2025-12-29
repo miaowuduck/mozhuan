@@ -17,7 +17,12 @@ export class GeminiService {
             { text: promptText }
           ]
         }],
-        generationConfig: { thinkingConfig: { includeThoughts: false } },
+        generationConfig: { 
+          thinkingConfig: { 
+            includeThoughts: false,
+            thinkingBudget: 64
+          } 
+        },
         safetySettings: [
           { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "OFF" },
           { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "OFF" },
