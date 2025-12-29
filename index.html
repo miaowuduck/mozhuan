@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>墨转</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#007bff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="墨转">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/img/icon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/img/icon-16x16.png">
+  <link rel="apple-touch-icon" href="assets/img/icon-256x256.png">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <!-- PDF.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <!-- Marked (Markdown Parser) -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <!-- MathJax (For LaTeX to MathML conversion for Word export) -->
+  <script>
+    window.MathJax = {
+      startup: {
+        typeset: false // 手动控制渲染
+      },
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      },
+      options: {
+        enableMenu: false
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <!-- KaTeX (LaTeX Rendering) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <!-- Mermaid (Diagrams) -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+  <!-- SortableJS & jsPDF (For Camera/Image to PDF) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <!-- html2pdf.js (For HTML to PDF export) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="header-bar">
+      <h1>墨转</h1>
+      <button id="settingsToggleBtn" class="settings-btn" aria-label="设置">
+        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      </button>
+    </div>
+
+    <!-- 错误提示区 -->
+    <div id="globalError" class="error-msg"></div>
+
+    <div class="row">
+      <!-- 设置栏 (Moved to Drawer) -->
+      
+      <!-- 操作栏 -->
+      <div class="col">
+        <div class="card">
+          <h3>文件处理</h3>
+          <div class="button-group">
+            <label for="fileInput" id="fileInputLabel" class="btn-like">选择文件</label>
+            <input type="file" id="fileInput" accept=".pdf" multiple style="display:none">
+            <button id="cameraBtn" class="btn-like" style="background-color: #17a2b8;">拍摄/图片转PDF</button>
+          </div>
+          <div id="fileList"></div>
+          <button id="startBtn" onclick="main()">开始转换</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="resultsArea"></div>
+  </div>
+
+  <!-- Settings Drawer -->
+  <div id="settingsBackdrop" class="settings-backdrop"></div>
+  <div id="settingsDrawer" class="settings-drawer">
+    <div class="drawer-header">
+      <h3>系统设置</h3>
+      <button id="closeSettingsBtn" class="close-drawer-btn">&times;</button>
+    </div>
+    <div class="drawer-content">
+      <label>API Key</label>
+      <input type="password" id="apiKey" value="" placeholder="输入 API Key">
+
+      <label>API URL</label>
+      <input type="text" id="apiUrl" value="https://jeniya.cn">
+
+      <label>目标语言</label>
+      <select id="targetLanguage">
+        <option value="自动">自动</option>
+        <option value="全中文">全中文</option>
+        <option value="全英文">全英文</option>
+        <option value="中英双语">中英双语</option>
+      </select>
+
+      <label>上下文页数</label>
+      <input type="number" id="contextPages" value="3" min="1" max="10">
+
+      <label>绘图模式</label>
+      <select id="drawingMode">
+        <option value="false">不绘图</option>
+        <option value="true">绘图 (生成插图)</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Setup Modal -->
+  <div id="setupModal" class="modal">
+    <div class="modal-content" style="max-width: 500px;">
+      <h2>欢迎使用墨转</h2>
+      <p>请先配置 API Key 才能开始使用。</p>
+      
+      <label>API Key <span style="color:red">*</span></label>
+      <input type="password" id="setupApiKey" placeholder="输入 API Key">
+
+      <label>API URL</label>
+      <input type="text" id="setupApiUrl" value="https://jeniya.cn">
+
+      <button id="saveSetupBtn">保存并开始</button>
+    </div>
+  </div>
+
+  <!-- Camera/Image Modal -->
+  <div id="cameraModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal">&times;</span>
+      <h2>文档拍摄助手</h2>
+      
+      <div class="camera-controls">
+        <select id="camera-select">
+            <option value="" disabled selected>正在加载摄像头...</option>
+        </select>
+        <button id="btn-capture">📸 拍摄本页</button>
+        <label for="img-upload" class="custom-file-upload">
+            📂 上传图片
+        </label>
+        <input id="img-upload" type="file" accept="image/*" multiple style="display:none;">
+        <button id="btn-generate-use" style="background-color: #28a745;">✅ 生成并使用 PDF</button>
+      </div>
+
+      <div class="video-container">
+        <video id="video" autoplay playsinline></video>
+      </div>
+
+      <div id="photo-list" class="photo-list">
+        <div class="empty-tip">拍摄照片将显示在这里，拖拽可排序</div>
+      </div>
+      
+      <canvas id="canvas" style="display:none;"></canvas>
+    </div>
+  </div>
+
+  <script type="module" src="assets/js/main.js"></script>
+</body>
+</html>
