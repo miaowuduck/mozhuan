@@ -101,16 +101,35 @@ export function initCameraModule() {
         startCamera(e.target.value);
     });
 
-    // 拍照
-    btnCapture.addEventListener('click', () => {
+    // 拍照功能
+    function capturePhoto() {
         if (!currentStream) return;
+        
+        // 触发闪光动画
+        const flashOverlay = document.querySelector('.flash-overlay');
+        if (flashOverlay) {
+            flashOverlay.classList.add('active');
+            setTimeout(() => {
+                flashOverlay.classList.remove('active');
+            }, 100);
+        }
+
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         const ctx = canvas.getContext('2d');
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         const imgData = canvas.toDataURL('image/jpeg', 0.85);
         addPhotoToGallery(imgData);
-    });
+    }
+
+    // 按钮点击拍照
+    btnCapture.addEventListener('click', capturePhoto);
+
+    // 点击取景框拍照
+    const videoContainer = document.querySelector('.video-container');
+    if (videoContainer) {
+        videoContainer.addEventListener('click', capturePhoto);
+    }
 
     // 上传图片
     imgUpload.addEventListener('change', (e) => {
@@ -221,5 +240,8 @@ export function initCameraModule() {
 
         // 关闭 Modal
         closeModal();
+
+        // 清空图片列表
+        photoList.innerHTML = '<div class="empty-tip">拍摄照片将显示在这里，拖拽可排序</div>';
     });
 }

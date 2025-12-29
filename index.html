@@ -136,7 +136,6 @@
         <select id="camera-select">
             <option value="" disabled selected>正在加载摄像头...</option>
         </select>
-        <button id="btn-capture">📸 拍摄本页</button>
         <label for="img-upload" class="custom-file-upload">
             📂 上传图片
         </label>
@@ -146,7 +145,13 @@
 
       <div class="video-container">
         <video id="video" autoplay playsinline></video>
+        <div class="viewfinder-overlay"></div>
+        <div class="viewfinder-corners"></div>
+        <div class="flash-overlay"></div>
+        <div class="touch-hint">点击屏幕拍摄</div>
       </div>
+
+      <button id="btn-capture" class="btn-capture-large">📸 拍摄本页</button>
 
       <div id="photo-list" class="photo-list">
         <div class="empty-tip">拍摄照片将显示在这里，拖拽可排序</div>

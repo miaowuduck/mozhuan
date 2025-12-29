@@ -212,6 +212,7 @@ button:disabled { background: #ccc; cursor: not-allowed; }
     overflow: hidden;
     margin: 0 auto 20px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    cursor: pointer;
 }
 
 video {
@@ -265,6 +266,9 @@ video {
     border-radius: 50%;
     width: 24px;
     height: 24px;
+    min-width: 24px;
+    min-height: 24px;
+    aspect-ratio: 1 / 1;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -688,5 +692,143 @@ img, video, canvas, svg {
     .settings-drawer {
         width: 85%;
     }
+}
+
+/* Flash Animation */
+.flash-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 10;
+    transition: opacity 0.1s ease-out;
+}
+
+.flash-overlay.active {
+    opacity: 0.8;
+    transition: none;
+}
+
+/* Viewfinder Overlay */
+.viewfinder-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    box-sizing: border-box;
+    z-index: 5;
+}
+
+.viewfinder-overlay::before,
+.viewfinder-overlay::after {
+    content: '';
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border-color: rgba(255, 255, 255, 0.7);
+    border-style: solid;
+    transition: all 0.2s ease;
+}
+
+.viewfinder-overlay::before {
+    top: 15px;
+    left: 15px;
+    border-width: 4px 0 0 4px;
+}
+
+.viewfinder-overlay::after {
+    bottom: 15px;
+    right: 15px;
+    border-width: 0 4px 4px 0;
+}
+
+.viewfinder-corners {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.viewfinder-corners::before {
+    content: '';
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 30px;
+    height: 30px;
+    border-color: rgba(255, 255, 255, 0.7);
+    border-style: solid;
+    border-width: 4px 4px 0 0;
+    transition: all 0.2s ease;
+}
+
+.viewfinder-corners::after {
+    content: '';
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+    width: 30px;
+    height: 30px;
+    border-color: rgba(255, 255, 255, 0.7);
+    border-style: solid;
+    border-width: 0 0 4px 4px;
+    transition: all 0.2s ease;
+}
+
+/* Focus/Capture Animation */
+.video-container:active .viewfinder-overlay::before,
+.video-container:active .viewfinder-overlay::after,
+.video-container:active .viewfinder-corners::before,
+.video-container:active .viewfinder-corners::after {
+    transform: scale(0.9);
+    border-color: #00ff00; /* Green flash on click */
+}
+
+/* Touch Hint Overlay */
+.touch-hint {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 1.5rem;
+    font-weight: bold;
+    pointer-events: none;
+    z-index: 6;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    user-select: none;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    padding: 10px 20px;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+/* Large Capture Button */
+.btn-capture-large {
+    display: block;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto 15px;
+    padding: 15px;
+    font-size: 1.2rem;
+    background-color: #17a2b8;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-capture-large:hover {
+    background-color: #138496;
 }
 
