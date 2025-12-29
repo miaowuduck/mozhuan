@@ -145,6 +145,30 @@ export function initCameraModule() {
         imgUpload.value = '';
     });
 
+    // 粘贴图片支持
+    document.addEventListener('paste', (e) => {
+        if (modal.style.display !== 'block') return;
+
+        const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+        let hasImage = false;
+
+        for (const item of items) {
+            if (item.type.indexOf('image') !== -1) {
+                const file = item.getAsFile();
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    addPhotoToGallery(event.target.result);
+                };
+                reader.readAsDataURL(file);
+                hasImage = true;
+            }
+        }
+        
+        if (hasImage) {
+            e.preventDefault();
+        }
+    });
+
     function addPhotoToGallery(imgData) {
         const emptyTip = document.querySelector('.empty-tip');
         if (emptyTip) emptyTip.remove();
@@ -165,7 +189,7 @@ export function initCameraModule() {
         const item = btn.parentElement;
         item.remove();
         if (photoList.children.length === 0) {
-            photoList.innerHTML = '<div class="empty-tip">拍摄照片将显示在这里，拖拽可排序</div>';
+            photoList.innerHTML = '<div class="empty-tip">拍摄照片将显示在这里，拖拽可排序<span class="desktop-only">，支持Ctrl+V粘贴</span></div>';
         } else {
             updatePageNumbers();
         }

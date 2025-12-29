@@ -261,23 +261,20 @@ async function main() {
       dlBtn.href = url;
       dlBtn.download = `${file.name.replace('.pdf', '')}.md`;
       dlBtn.textContent = `下载 Markdown`;
-      dlBtn.className = 'btn-like'; // 复用现有样式类
-      dlBtn.style.backgroundColor = '#6c757d';
+      dlBtn.className = 'btn-like btn-secondary'; 
       dlBtn.style.textDecoration = 'none';
       dlBtn.style.color = 'white';
       
       // 2. HTML 导出
       const htmlBtn = document.createElement('button');
       htmlBtn.textContent = '导出 HTML';
-      htmlBtn.className = 'btn-like';
-      htmlBtn.style.backgroundColor = '#dc3545';
+      htmlBtn.className = 'btn-like btn-danger';
       htmlBtn.onclick = () => exportToHTML(prevEl, file.name.replace('.pdf', ''));
 
       // 3. Word 导出
       const wordBtn = document.createElement('button');
       wordBtn.textContent = '导出 Word';
       wordBtn.className = 'btn-like';
-      wordBtn.style.backgroundColor = '#007bff';
       wordBtn.onclick = () => exportToWord(prevEl, file.name.replace('.pdf', ''));
 
       actionArea.appendChild(dlBtn);

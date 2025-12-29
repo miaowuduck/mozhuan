@@ -64,9 +64,9 @@
         <div class="card">
           <h3>文件处理</h3>
           <div class="button-group">
-            <label for="fileInput" id="fileInputLabel" class="btn-like">选择文件</label>
+            <label for="fileInput" id="fileInputLabel" class="btn-like">上传PDF</label>
             <input type="file" id="fileInput" accept=".pdf" multiple style="display:none">
-            <button id="cameraBtn" class="btn-like" style="background-color: #17a2b8;">拍摄/图片转PDF</button>
+            <button id="cameraBtn" class="btn-like btn-info">拍摄/上传图片</button>
           </div>
           <div id="fileList"></div>
           <button id="startBtn" onclick="main()">开始转换</button>
@@ -130,7 +130,7 @@
   <div id="cameraModal" class="modal">
     <div class="modal-content">
       <span class="close-modal">&times;</span>
-      <h2>文档拍摄助手</h2>
+      <h2>图片上传<span class="desktop-only">（可直接Ctrl+V黏贴图片）</span></h2>
       
       <div class="camera-controls">
         <select id="camera-select">
@@ -140,7 +140,7 @@
             📂 上传图片
         </label>
         <input id="img-upload" type="file" accept="image/*" multiple style="display:none;">
-        <button id="btn-generate-use" style="background-color: #28a745;">✅ 生成并使用 PDF</button>
+        <button id="btn-generate-use" class="btn-success">✅ 生成并使用 PDF</button>
       </div>
 
       <div class="video-container">
@@ -154,7 +154,7 @@
       <button id="btn-capture" class="btn-capture-large">📸 拍摄本页</button>
 
       <div id="photo-list" class="photo-list">
-        <div class="empty-tip">拍摄照片将显示在这里，拖拽可排序</div>
+        <div class="empty-tip">拍摄照片将显示在这里，拖拽可排序<span class="desktop-only">，支持Ctrl+V粘贴</span></div>
       </div>
       
       <canvas id="canvas" style="display:none;"></canvas>
