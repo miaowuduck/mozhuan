@@ -584,7 +584,7 @@ input, textarea, .preview-box, #resultsArea, .log-box {
 
     .container {
         padding: 10px;
-        padding-bottom: 100px; /* Extra space for fixed button */
+        padding-bottom: 40px; /* Reduced space since button is no longer fixed */
     }
 
     .card {
@@ -632,20 +632,14 @@ input, textarea, .preview-box, #resultsArea, .log-box {
 
     /* Floating Action Button style for the main action */
     #startBtn {
-        position: fixed;
-        bottom: 30px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 90%;
-        max-width: 400px;
-        z-index: 1000;
-        box-shadow: var(--shadow-depth-16);
-        border-radius: 25px;
-        font-weight: 600;
-        letter-spacing: 0.5px;
+        /* position: fixed; Removed to prevent overlapping */
+        width: 100%;
+        margin-top: 20px;
+        padding: 15px;
         font-size: 18px;
-        /* Ensure it sits above safe area */
-        margin-bottom: env(safe-area-inset-bottom);
+        font-weight: 600;
+        box-shadow: var(--shadow-depth-4);
+        border-radius: var(--radius-md);
     }
     
     /* Adjust modal for mobile */
