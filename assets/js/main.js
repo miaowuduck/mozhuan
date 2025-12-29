@@ -131,7 +131,7 @@ if (setupModal && setupApiKeyInput && setupApiUrlInput && saveSetupBtn) {
                             <strong>${f.name}</strong>
                             <div class="processing-status">正在处理中... <span class="thinking-dots"><span></span><span></span><span></span></span></div>
                         </div>
-                        <input type="text" id="topic-${i}" class="topic-input" value="通用笔记" placeholder="主题">
+                        <input type="text" id="topic-${i}" class="topic-input" placeholder="请填写笔记主题">
                     </div>
                     
                     <div style="margin-top: 10px;">
@@ -193,7 +193,7 @@ async function main() {
     const cardEl = document.getElementById(`file-card-${idx}`);
     const logEl = document.getElementById(`log-${idx}`);
     const prevEl = document.getElementById(`preview-${idx}`);
-    const topic = document.getElementById(`topic-${idx}`).value;
+    const topic = document.getElementById(`topic-${idx}`).value.trim() || "通用笔记";
     
     // 开启任务动画
     cardEl.classList.add('processing');
