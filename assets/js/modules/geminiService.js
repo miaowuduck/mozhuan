@@ -129,7 +129,13 @@ export class GeminiService {
                   'Authorization': `Bearer ${this.apiKey}`
               },
               body: JSON.stringify({
-                  contents: [{ role: "user", parts: [{ text: prompt }] }]
+                  contents: [{ role: "user", parts: [{ text: prompt }] }],
+                  generationConfig: {
+                      thinkingConfig: {
+                          includeThoughts: false,
+                          thinkingBudget: 64
+                      }
+                  }
               })
           });
           
@@ -146,5 +152,49 @@ export class GeminiService {
           console.error("Mermaid fix failed:", e);
       }
       return null;
+    }
+  
+    async describeMermaid(code, errorMsg) {
+      const url = `${this.apiUrl}/v1beta/models/gemini-3-flash-preview:generateContent`;
+      const prompt = `
+  The following Mermaid code has a syntax error and could not be fixed after multiple attempts:
+  Error: "${errorMsg}"
+  
+  Code:
+  \`\`\`mermaid
+  ${code}
+  \`\`\`
+  
+  Please provide a text description of what this diagram was supposed to show. 
+  Summarize the content and relationships.
+  Do not return mermaid code. Return plain text or markdown text description.
+  `;
+  
+      try {
+          const response = await fetch(url, {
+              method: 'POST',
+              headers: { 
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${this.apiKey}`
+              },
+              body: JSON.stringify({
+                  contents: [{ role: "user", parts: [{ text: prompt }] }],
+                  generationConfig: {
+                      thinkingConfig: {
+                          includeThoughts: false,
+                          thinkingBudget: 64
+                      }
+                  }
+              })
+          });
+          
+          if (!response.ok) throw new Error("Describe request failed");
+          
+          const result = await response.json();
+          return result.candidates?.[0]?.content?.parts?.[0]?.text || "无法生成描述";
+      } catch (e) {
+          console.error("Mermaid describe failed:", e);
+          return "Mermaid 渲染失败且无法生成描述。";
+      }
     }
   }

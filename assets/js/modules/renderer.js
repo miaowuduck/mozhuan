@@ -1,5 +1,5 @@
 // 渲染 Markdown, LaTeX 和 Mermaid
-export async function renderContent(element, markdown, service = null, logger = null) {
+export async function renderContent(element, markdown, service = null, logger = null, retryCount = 0) {
     // 1. Markdown -> HTML
     // 使用 marked 解析
     element.innerHTML = marked.parse(markdown);
@@ -31,8 +31,8 @@ export async function renderContent(element, markdown, service = null, logger = 
       
       // 尝试自动修复
       if (service) {
-          console.log("尝试自动修复 Mermaid...");
-          if (logger) logger("尝试自动修复 Mermaid...");
+          console.log(`尝试自动修复 Mermaid (尝试次数: ${retryCount + 1})...`);
+          if (logger) logger(`尝试自动修复 Mermaid (尝试次数: ${retryCount + 1})...`);
           const tokens = marked.lexer(markdown);
           
           for (const token of tokens) {
@@ -43,15 +43,30 @@ export async function renderContent(element, markdown, service = null, logger = 
                   } catch (parseErr) {
                       console.log("发现错误的 Mermaid 代码:", token.text);
                       if (logger) logger(`发现错误的 Mermaid 代码，正在修复... 原因: ${parseErr.message}`);
-                      const fixedCode = await service.fixMermaid(token.text, parseErr.message);
-                      if (fixedCode && fixedCode !== token.text) {
-                          // 替换原文中的代码块
-                          // 注意：简单的 replace 可能会替换错误的实例，如果完全相同的代码块出现多次。
-                          // 但通常损坏的代码是独特的。
-                          newMarkdown = newMarkdown.replace(token.text, fixedCode);
+                      
+                      let replacement = null;
+
+                      if (retryCount < 3) {
+                          const fixedCode = await service.fixMermaid(token.text, parseErr.message);
+                          if (fixedCode && fixedCode !== token.text) {
+                              // 使用 token.raw 进行更精确的替换
+                              // 构造新的 raw 字符串，包含 fences
+                              replacement = "```mermaid\n" + fixedCode + "\n```";
+                              console.log("Mermaid 已修复");
+                              if (logger) logger("Mermaid 已修复");
+                          }
+                      } else {
+                          // 超过重试次数，请求文字描述
+                          console.log("Mermaid 修复失败次数过多，请求文字描述...");
+                          if (logger) logger("Mermaid 修复失败次数过多，请求文字描述...");
+                          const description = await service.describeMermaid(token.text, parseErr.message);
+                          replacement = `> **Mermaid 图表无法显示**\n>\n> ${description.replace(/\n/g, '\n> ')}\n`;
+                      }
+
+                      if (replacement) {
+                          // 使用 token.raw 替换
+                          newMarkdown = newMarkdown.replace(token.raw, replacement);
                           hasUpdates = true;
-                          console.log("Mermaid 已修复");
-                          if (logger) logger("Mermaid 已修复");
                       }
                   }
               }
@@ -72,9 +87,9 @@ export async function renderContent(element, markdown, service = null, logger = 
       });
     }
   
-    // 如果有修复，递归调用以重新渲染（不带 service 防止死循环）
+    // 如果有修复，递归调用以重新渲染
     if (hasUpdates) {
-        return renderContent(element, newMarkdown, null, logger);
+        return renderContent(element, newMarkdown, service, logger, retryCount + 1);
     }
     
     return newMarkdown;
