@@ -36,7 +36,7 @@ export class PDFProcessor {
       } else if (config.lang === "中英双语") {
         languageInstruction = "Output the study guide in Bilingual format. For every paragraph or section, write it first in Simplified Chinese, followed immediately by the English version.";
       } else if (config.lang === "自动") {
-        languageInstruction = "";
+        languageInstruction = "Output the study guide in the same language as the handwritten notes.";
       } else {
         // Default fallback
         languageInstruction = "Output the study guide in Simplified Chinese. Translate if necessary.";
@@ -55,6 +55,14 @@ export class PDFProcessor {
              - **For Diagrams:** Name axes, describe curves/shapes, list labels, and specify type (e.g., "Circuit Diagram").
               `;
       }
+
+      let logicalInstruction = "";
+      if (config.logic === "补充模式") {
+        logicalInstruction = "- **Logical Flow:** If there are slight logical gaps in the handwritten notes, add *brief* explanations to make the study guide flow better. Do not add too much external content, just enough to connect the dots.";
+      } else {
+        // 默认整理模式
+        logicalInstruction = "- **Strict Transcription:** Transcribe the handwritten notes exactly as they appear. Do not add external explanations, do not fill in gaps, and do not hallucinate content not present in the image. Focus on organizing the existing content clearly.";
+      }
   
       const prompt = `
           You are an expert academic tutor. 
@@ -66,7 +74,7 @@ export class PDFProcessor {
   
           **Your Task:**
           Analyze the handwritten notes in the attached image and convert them into a Markdown study guide.
-          - **Logical Flow:** If there are slight logical gaps in the handwritten notes, add *brief* explanations to make the study guide flow better. Do not add too much external content, just enough to connect the dots.
+          ${logicalInstruction}
   
           **LATEX FORMATTING RULES:**
           - LaTeX must be wrapped in \`$\`.

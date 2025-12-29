@@ -13,7 +13,7 @@ initCameraModule();
 
 // --- Settings Management ---
 const SETTINGS_KEY = 'mozhuang_settings';
-const settingsInputs = ['apiKey', 'apiUrl', 'targetLanguage', 'contextPages', 'drawingMode'];
+const settingsInputs = ['apiKey', 'apiUrl', 'targetLanguage', 'logicMode', 'contextPages', 'drawingMode'];
 
 function loadSettings() {
     const saved = localStorage.getItem(SETTINGS_KEY);
@@ -185,6 +185,7 @@ async function main() {
   const processor = new PDFProcessor(service);
   const config = {
     lang: document.getElementById('targetLanguage').value,
+    logic: document.getElementById('logicMode').value,
     ctxLen: parseInt(document.getElementById('contextPages').value),
     drawing: document.getElementById('drawingMode').value === 'true'
   };
